@@ -13,7 +13,11 @@ db.query('SELECT NOW()', (err, res) => {
 });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://engrena.netlify.app', // frontend Netlify
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Prefixo "/api" para as rotas de autenticação

@@ -1,58 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import Sidebar from '../components/Layouts/SideBar';
+import CardsDashboard from '../components/Cards/CardsDashboard'; // ajuste o caminho conforme seu projeto
 
 const Dashboard = () => {
-  const [usuario, setUsuario] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const dados = localStorage.getItem('user');
-    if (dados) {
-      setUsuario(JSON.parse(dados));
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/');
-  };
-
   return (
-    <div className="min-h-screen bg-[#f4f7fb] p-4 flex flex-col items-center justify-center">
-      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md sm:max-w-lg md:max-w-2xl">
-        <h1 className="text-3xl font-bold text-[#093a69] mb-6 text-center">
-          Bem-vindo{usuario ? `, ${usuario.nomeCompleto}` : ''}!
-        </h1>
+    <div className="flex min-h-screen bg-[#d6dfeb]">
+      <Sidebar />
 
-        {usuario && (
-          <div className="space-y-6 text-[#093a69]">
-            <div>
-              <h2 className="text-xl font-semibold text-[#275b9d] mb-2">Dados do Usuário</h2>
-              <p><strong>Nome:</strong> {usuario.nomeCompleto}</p>
-              <p><strong>CPF:</strong> {usuario.cpf}</p>
-              <p><strong>Email:</strong> {usuario.email}</p>
-            </div>
+      <main className="flex-1 ml-64 p-8">
+        <h1 className="text-4xl font-bold text-[#093a69]">Dashboard</h1>
 
-            {usuario.estabelecimento && (
-              <div>
-                <h2 className="text-xl font-semibold text-[#275b9d] mb-2">Estabelecimento</h2>
-                <p><strong>Nome:</strong> {usuario.estabelecimento.nome}</p>
-                <p><strong>CNPJ:</strong> {usuario.estabelecimento.cnpj}</p>
-                <p><strong>Endereço:</strong> {usuario.estabelecimento.endereco}</p>
-              </div>
-            )}
-          </div>
-        )}
+        <CardsDashboard className="w-[60%]" />
 
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={handleLogout}
-            className="bg-[#ed6363] hover:bg-[#ff4d4d] text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
-          >
-            Sair
-          </button>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };
