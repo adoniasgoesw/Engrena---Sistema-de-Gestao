@@ -4,4 +4,14 @@
 .clip-custom {
   clip-path: path('M40,0 Q80,20 100,50 Q80,80 40,100 Q20,80 0,50 Q20,20 40,0 Z');
 }
-    
+
+/* index.css ou globals.css */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
