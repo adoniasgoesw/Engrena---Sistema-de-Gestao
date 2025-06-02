@@ -8,10 +8,10 @@ const Dashboard = () => {
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#d6dfeb] overflow-hidden">
+    <div className="flex h-screen bg-[#d6dfeb] overflow-hidden">
       <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
-      <main className="flex-1 w-full overflow-y-auto p-4 sm:p-6 md:p-8">
+      <main className="flex-1 w-full overflow-auto p-4 sm:p-6 md:p-8">
         {/* Linha com botão e título */}
         <div className="flex items-center gap-4 mb-6">
           {/* Botão hambúrguer só no mobile */}

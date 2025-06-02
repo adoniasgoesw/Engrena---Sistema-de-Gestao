@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* tailwind.config.js ou um CSS global */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
 /* Moldura customizada com curvas assimétricas, estilo “Engrena” */
 .clip-custom {
   clip-path: path('M40,0 Q80,20 100,50 Q80,80 40,100 Q20,80 0,50 Q20,20 40,0 Z');

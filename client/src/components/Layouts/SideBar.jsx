@@ -28,7 +28,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      {/* Fundo borrado ao abrir menu no mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 backdrop-blur-sm z-40 md:hidden"
@@ -36,12 +35,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           bg-gradient-to-b from-[#093a69] to-[#275b9d] text-white w-64
-          h-screen fixed md:relative z-50 md:z-0
-          px-4 pt-6 pb-10 transition-transform duration-300
+          fixed md:relative z-50 md:z-0 top-0 bottom-0 h-full
+          px-4 pt-6 transition-transform duration-300
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
         `}
       >
@@ -61,9 +59,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 onClick={handleNavClick}
               />
             ))}
-          </div>
-          <div className="mt-6 text-sm text-center text-[#cde1f8] opacity-80">
-            © {new Date().getFullYear()} Engrena
           </div>
         </nav>
       </aside>
