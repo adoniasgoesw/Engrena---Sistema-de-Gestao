@@ -4,7 +4,7 @@ import BarraDePesquisa from '../../components/Inputs/BarraDePesquisa';
 import ListagemPadrao from '../Listagem/ListagemPadrao';
 
 const colunas = ['Nome', 'Tipo', 'Categoria', 'Valor Unitário', 'Estoque/Tempo'];
-const chaves = ['nome', 'tipo', 'nome_categoria', 'valor_unitario', 'estoque_ou_tempo']; // chave corrigida
+const chaves = ['nome', 'tipo', 'nome_categoria', 'valor_unitario', 'estoque_ou_tempo'];
 
 const formatarTipoComEstilo = (tipo) => {
   const estilos = {
@@ -33,29 +33,22 @@ const ListagemItens = () => {
   useEffect(() => {
     const buscarItens = async () => {
       try {
-        const userJSON = localStorage.getItem('user');
         const token = localStorage.getItem('token');
-        if (!userJSON || !token) return;
+        const user = JSON.parse(localStorage.getItem('user'));
 
-        const user = JSON.parse(userJSON);
-        if (!user?.estabelecimento?.id) return;
+        if (!token || !user?.estabelecimento?.id) return;
 
-        const response = await api.get(
+        const { data } = await api.get(
           `/itens/por-estabelecimento/${user.estabelecimento.id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        const itensFormatados = response.data.map((item) => {
-          // Estoque ou tempo (exibido de forma adequada)
+        const itensFormatados = data.map((item) => {
           const estoqueOuTempo =
             item.tipo === 'produto'
               ? item.estoque_atual != null && item.unidade_medida
                 ? `${item.estoque_atual} ${item.unidade_medida}`
-                : item.estoque_atual != null
-                ? `${item.estoque_atual}`
-                : '-'
+                : item.estoque_atual ?? '-'
               : item.tempo_estimado_min
               ? `${item.tempo_estimado_min} min`
               : '-';
@@ -63,7 +56,7 @@ const ListagemItens = () => {
           return {
             ...item,
             tipo: formatarTipoComEstilo(item.tipo),
-            nome_categoria: item.nome_categoria || '-', // corrigido para usar nome_categoria conforme backend
+            nome_categoria: item.nome_categoria || '-',
             estoque_ou_tempo: estoqueOuTempo,
             valor_unitario: Number(item.valor_unitario).toLocaleString('pt-BR', {
               style: 'currency',
@@ -81,41 +74,35 @@ const ListagemItens = () => {
     buscarItens();
   }, []);
 
-  // Filtrar por texto e por tipo
   const itensFiltrados = itens.filter((item) => {
-    const nomeMatch = item.nome.toLowerCase().includes(filtro.toLowerCase());
-    const categoriaMatch = item.nome_categoria.toLowerCase().includes(filtro.toLowerCase());
-
-    // tipo é JSX, pegar texto dentro (formatado)
+    const textoBusca = filtro.toLowerCase();
+    const nomeMatch = item.nome.toLowerCase().includes(textoBusca);
+    const categoriaMatch = item.nome_categoria.toLowerCase().includes(textoBusca);
     const tipoTexto = item.tipo?.props?.children?.toLowerCase() || '';
-    const tipoMatch = tipoTexto.includes(filtro.toLowerCase());
-
+    const tipoMatch = tipoTexto.includes(textoBusca);
     const filtroTipoOk = filtroTipo === '' || tipoTexto === filtroTipo;
 
-    return (nomeMatch || tipoMatch || tipoMatch) && filtroTipoOk;
+    return (nomeMatch || categoriaMatch || tipoMatch) && filtroTipoOk;
   });
 
-  // Ordenar por nome asc/desc
   const itensOrdenados = [...itensFiltrados].sort((a, b) => {
-    if (ordenacao === 'nome-asc') return a.nome.localeCompare(b.nome);
-    if (ordenacao === 'nome-desc') return b.nome.localeCompare(a.nome);
-    return 0;
+    return ordenacao === 'nome-asc'
+      ? a.nome.localeCompare(b.nome)
+      : b.nome.localeCompare(a.nome);
   });
-
-  const toggleModalFiltro = () => setIsModalFiltroAberto(!isModalFiltroAberto);
 
   return (
     <div className="w-full relative">
       <BarraDePesquisa
         value={filtro}
         onChange={setFiltro}
-        onFiltroClick={toggleModalFiltro}
+        onFiltroClick={() => setIsModalFiltroAberto(!isModalFiltroAberto)}
         placeholder="Buscar por nome, tipo ou categoria..."
       />
 
       {isModalFiltroAberto && (
-        <div className="absolute top-0 mb-2 right-0 bg-white shadow-lg rounded-md p-4 z-50 w-64">
-          <h3 className="font-semibold mb-2">Ordenar / Filtrar por:</h3>
+        <div className="absolute top-0 right-0 bg-white shadow-lg rounded-md p-4 z-50 w-64">
+          <h3 className="font-semibold mb-2">Ordenar / Filtrar</h3>
           <ul className="space-y-2 text-sm text-gray-700">
             <li>
               <button

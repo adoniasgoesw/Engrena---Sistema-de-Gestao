@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import Paginator from '../Layouts/Pagination.jsx';
 import { FaCog } from 'react-icons/fa';
-import ModalDadosPadrao from '../Modals/ModalDadosPadrao'; // novo import
 
-const ListagemPadrao = ({ colunas, chaves, dados }) => {
+const ListagemPadrao = ({ colunas, chaves, dados, onRowClick }) => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemSelecionado, setItemSelecionado] = useState(null);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = dados.slice(startIndex, startIndex + itemsPerPage);
 
+  // Define classes para colunas responsivas
   const getResponsiveClass = (index) => {
     if (index === 0) return '';
     if (index === 1) return 'sm:table-cell hidden';
@@ -25,7 +24,10 @@ const ListagemPadrao = ({ colunas, chaves, dados }) => {
         <thead style={{ backgroundColor: '#d6dfeb' }}>
           <tr style={{ height: 56 }}>
             {colunas.map((coluna, index) => (
-              <th key={index} className={`px-5 text-left text-sm font-semibold text-gray-800 uppercase tracking-wide whitespace-nowrap ${getResponsiveClass(index)}`}>
+              <th
+                key={index}
+                className={`px-5 text-left text-sm font-semibold text-gray-800 uppercase tracking-wide whitespace-nowrap ${getResponsiveClass(index)}`}
+              >
                 {coluna}
               </th>
             ))}
@@ -45,12 +47,15 @@ const ListagemPadrao = ({ colunas, chaves, dados }) => {
             currentItems.map((item, idx) => (
               <tr
                 key={idx}
-                onClick={() => setItemSelecionado(item)}
+                onClick={() => onRowClick && onRowClick(item)}
                 className="hover:bg-blue-50 cursor-pointer transition duration-150 ease-in-out"
               >
                 {chaves.map((chave, index) => (
-                  <td key={index} className={`px-5 py-4 text-gray-700 whitespace-nowrap truncate max-w-[160px] ${getResponsiveClass(index)}`}>
-                    {item[chave] || '-'}
+                  <td
+                    key={index}
+                    className={`px-5 py-4 text-gray-700 whitespace-nowrap truncate max-w-[160px] ${getResponsiveClass(index)}`}
+                  >
+                    {item[chave] ?? '-'}
                   </td>
                 ))}
               </tr>
@@ -67,13 +72,6 @@ const ListagemPadrao = ({ colunas, chaves, dados }) => {
           onPageChange={setCurrentPage}
         />
       </div>
-
-      {itemSelecionado && (
-        <ModalDadosPadrao
-          dados={itemSelecionado}
-          onClose={() => setItemSelecionado(null)}
-        />
-      )}
     </div>
   );
 };

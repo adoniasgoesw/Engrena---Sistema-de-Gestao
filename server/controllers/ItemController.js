@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 
+// Cadastrar Item
 const cadastrarItem = async (req, res) => {
   const {
     nome,
@@ -13,17 +14,14 @@ const cadastrarItem = async (req, res) => {
     id_estabelecimento,
   } = req.body;
 
-  // Validações básicas
   if (!nome || !tipo || !id_categoria || !valor_unitario || !id_estabelecimento) {
     return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
   }
 
-  // Unidade de medida obrigatória para produtos
   if (tipo === 'produto' && (!unidade_medida || unidade_medida.trim() === '')) {
     return res.status(400).json({ error: 'Unidade de medida é obrigatória para produtos.' });
   }
 
-  // Converte tempo estimado para inteiro (minutos), se for serviço
   const tempoEstimadoMin = tipo === 'serviço' && tempo_estimado
     ? parseInt(tempo_estimado, 10)
     : null;
@@ -33,10 +31,12 @@ const cadastrarItem = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO itens 
+    const result = await pool.query(`
+      INSERT INTO itens 
         (nome, descricao, unidade_medida, tipo, categoria_id, estoque_atual, tempo_estimado_min, valor_unitario, id_estabelecimento)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *`,
       [
         nome,
         descricao || null,
@@ -57,10 +57,9 @@ const cadastrarItem = async (req, res) => {
   }
 };
 
-
-
+// Listar Itens por Estabelecimento
 const listarItensPorEstabelecimento = async (req, res) => {
-  const { id } = req.params;
+  const { id_estabelecimento } = req.params;
 
   try {
     const result = await pool.query(`
@@ -73,7 +72,7 @@ const listarItensPorEstabelecimento = async (req, res) => {
         categorias c ON i.categoria_id = c.id
       WHERE 
         i.id_estabelecimento = $1
-    `, [id]);
+    `, [id_estabelecimento]);
 
     res.json(result.rows);
   } catch (error) {
@@ -81,8 +80,6 @@ const listarItensPorEstabelecimento = async (req, res) => {
     res.status(500).json({ error: 'Erro ao listar itens' });
   }
 };
-
-
 
 module.exports = {
   cadastrarItem,

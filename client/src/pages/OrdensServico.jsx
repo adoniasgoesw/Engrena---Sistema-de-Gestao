@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Layouts/SideBar.jsx';
 import BotoesClientes from '../components/Buttons/Buttons.jsx';
 import ModalOrdem from '../components/Modals/ModalOrdem.jsx';
+import ListagemOrdens from '../components/Listagem/ListagemOrdem.jsx'; // <-- importando a listagem
 import { FaBars } from 'react-icons/fa';
 
 const Ordens = () => {
@@ -31,7 +32,8 @@ const Ordens = () => {
           <BotoesClientes onCadastrarClick={() => setModalOrdemAberto(true)} />
         </div>
 
-        {/* Aqui entrará futuramente a listagem de ordens com barra de pesquisa integrada */}
+        {/* Renderiza a listagem de ordens com barra de pesquisa integrada */}
+        <ListagemOrdens />
 
         <ModalOrdem isOpen={modalOrdemAberto} onClose={() => setModalOrdemAberto(false)} />
       </main>

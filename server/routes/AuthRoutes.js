@@ -6,7 +6,16 @@ const ClienteController = require('../controllers/ClienteController');
 const VeiculoController = require('../controllers/VeiculoController');
 const CategoriaController = require('../controllers/CategoriaController');
 const ItemController = require('../controllers/ItemController');
+const OrdemController = require('../controllers/OrdemController.js');
+
+
 const upload = require('../config/uploud');
+
+
+// Ordem de Serviço
+router.post('/ordens', OrdemController.cadastrarOrdem);
+router.get('/ordens/por-estabelecimento/:id_estabelecimento', OrdemController.listarOrdensPorEstabelecimento);
+
 
 // Itens
 router.post('/itens', ItemController.cadastrarItem);
