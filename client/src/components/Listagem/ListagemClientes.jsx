@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import ListagemPadrao from './ListagemPadrao';
 import BarraDePesquisa from '../../components/Inputs/BarraDePesquisa';
 import api from '../../services/api';
+import ModalDadosPadrao from '../Modals/ModalDadosPadrao'; // importe aqui
 
-const colunas = ['Nome', 'CPF', 'E-mail', 'Número', 'Endereço', 'Data Cadastro'];
-const chaves = ['nome', 'cpf', 'email', 'telefone', 'endereco', 'data_cadastro'];
+const colunas = ['Nome', 'CPF', 'E-mail', 'Número', 'Endereço'];
+const chaves = ['nome', 'cpf', 'email', 'telefone', 'endereco'];
 
 const ListagemClientes = () => {
   const [clientes, setClientes] = useState([]);
   const [filtro, setFiltro] = useState('');
   const [isModalFiltroAberto, setIsModalFiltroAberto] = useState(false);
-  const [ordenacao, setOrdenacao] = useState('nome-asc'); // padrão
+  const [ordenacao, setOrdenacao] = useState('nome-asc');
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
 
   useEffect(() => {
     const buscarClientes = async () => {
@@ -58,12 +60,10 @@ const ListagemClientes = () => {
     buscarClientes();
   }, []);
 
-  // Filtra clientes pelo nome conforme filtro
   const clientesFiltrados = clientes.filter((cliente) =>
     cliente.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
-  // Ordena os clientes filtrados conforme o estado 'ordenacao'
   const clientesOrdenados = [...clientesFiltrados].sort((a, b) => {
     switch (ordenacao) {
       case 'nome-asc':
@@ -79,13 +79,48 @@ const ListagemClientes = () => {
     }
   });
 
-  // Toggle modal
   const toggleModalFiltro = () => setIsModalFiltroAberto(!isModalFiltroAberto);
 
-  // Handler seleção da ordenação
   const selecionarOrdenacao = (tipo) => {
     setOrdenacao(tipo);
     setIsModalFiltroAberto(false);
+  };
+
+  // Callback para salvar dados editados
+  const handleSave = async (dadosEditados) => {
+    try {
+      // Aqui você pode fazer chamada API para salvar os dados editados
+      // Por exemplo:
+      // await api.put(`/clientes/${dadosEditados.id}`, dadosEditados);
+
+      // Para demo, vamos só atualizar localmente
+      setClientes((old) =>
+        old.map((cli) => (cli.id === dadosEditados.id ? dadosEditados : cli))
+      );
+
+      alert('Cliente salvo com sucesso!');
+      setClienteSelecionado(null);
+    } catch (error) {
+      alert('Erro ao salvar cliente.');
+      console.error(error);
+    }
+  };
+
+  // Callback para excluir
+  const handleDelete = async (dadosParaExcluir) => {
+    try {
+      // Chamada API para excluir, por exemplo:
+      // await api.delete(`/clientes/${dadosParaExcluir.id}`);
+
+      // Para demo, remover localmente
+      setClientes((old) => old.filter((cli) => cli.id !== dadosParaExcluir.id));
+
+      alert('Cliente excluído com sucesso!');
+      setClienteSelecionado(null);
+    } catch (error) {
+      alert('Erro ao excluir cliente.');
+      console.error(error);
+    }
   };
 
   return (
@@ -96,7 +131,6 @@ const ListagemClientes = () => {
         onFiltroClick={toggleModalFiltro}
       />
 
-      {/* Modal de filtros posicionado acima do botão filtro */}
       {isModalFiltroAberto && (
         <div
           className="absolute top-0 mb-2 right-0 bg-white shadow-lg rounded-md p-4 z-50 w-64"
@@ -152,7 +186,17 @@ const ListagemClientes = () => {
         colunas={colunas}
         chaves={chaves}
         dados={clientesOrdenados}
+        onItemClick={setClienteSelecionado} // precisará mudar ListagemPadrao para aceitar isso
       />
+
+      {clienteSelecionado && (
+        <ModalDadosPadrao
+          dados={clienteSelecionado}
+          onClose={() => setClienteSelecionado(null)}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };

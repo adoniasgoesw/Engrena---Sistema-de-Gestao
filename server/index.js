@@ -3,6 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 const db = require('./config/db'); // conexão com DB
 const AuthRoutes = require('./routes/AuthRoutes');
+const path = require('path');
+
 
 db.query('SELECT NOW()', (err, res) => {
   if (err) {
@@ -13,11 +15,9 @@ db.query('SELECT NOW()', (err, res) => {
 });
 
 const app = express();
-app.use(cors({
-  origin: 'https://engrena.netlify.app', // frontend Netlify
-  credentials: true
-}));
 
+app.use('./uplouds', express.static(path.join(__dirname, 'uploads')));
+app.use(cors());
 app.use(express.json());
 
 // Prefixo "/api" para as rotas de autenticação

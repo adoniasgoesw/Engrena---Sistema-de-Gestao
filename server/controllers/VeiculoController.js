@@ -49,7 +49,24 @@ const listarVeiculosPorEstabelecimento = async (req, res) => {
   }
 };
 
+const listarVeiculosPorCliente = async (req, res) => {
+  const { id_cliente } = req.params;
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM veiculos WHERE id_cliente = $1',
+      [id_cliente]
+    );
+
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar veículos por cliente:', error);
+    return res.status(500).json({ error: 'Erro ao buscar veículos.' });
+  }
+};
+
 module.exports = {
   cadastrarVeiculo,
   listarVeiculosPorEstabelecimento,
+  listarVeiculosPorCliente,
 };
